@@ -12,8 +12,8 @@
     {
       "name": "unitism",
       "source": {
-        "source": "github",
-        "repo": "YuvalKlein/unitism-skills",
+        "source": "git-subdir",
+        "url": "https://github.com/YuvalKlein/unitism-skills.git",
         "path": "./unitism"
       },
       "description": "Bundle of UNITISM team skills: safe frontend contribution flow for non-engineers, cross-repo handoff receiver for engineers, and a positioning-check that flags primary-surface diffs against the locked product principles doc."
