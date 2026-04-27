@@ -13,7 +13,7 @@ You install this from inside the **Claude desktop app**, not the terminal. Steps
 3. In the chat box at the bottom, type this and press enter:
 
    ```
-   /plugin marketplace add yuval/unitism-skills
+   /plugin marketplace add YuvalKlein/unitism-skills
    ```
 
    Claude will fetch the marketplace and confirm. If it asks to trust the source, say yes.
@@ -32,7 +32,7 @@ You don't need to symlink anything, run any PowerShell commands, or touch a term
 
 ### If the repo is private
 
-If `yuval/unitism-skills` is a private GitHub repo, the desktop app may prompt you to authenticate with GitHub the first time you run step 3. Click through the GitHub auth dialog with your team account. If you don't have access to the repo, ask Yuval to add you as a collaborator on github.com/yuval/unitism-skills.
+If `YuvalKlein/unitism-skills` is a private GitHub repo, the desktop app may prompt you to authenticate with GitHub the first time you run step 3. Click through the GitHub auth dialog with your team account. If you don't have access to the repo, ask Yuval to add you as a collaborator on github.com/YuvalKlein/unitism-skills.
 
 ## Install (Yuval and Yudi — engineers)
 
@@ -43,7 +43,7 @@ If you prefer the CLI workflow:
 ```bash
 claude
 # inside Claude Code:
-/plugin marketplace add yuval/unitism-skills
+/plugin marketplace add YuvalKlein/unitism-skills
 /plugin install unitism@unitism-skills
 ```
 
@@ -84,7 +84,7 @@ See `_shared/strategy/ai-strategy-handoff.md` in `claude_files` for the full str
 
 ## Troubleshooting
 
-**`/plugin marketplace add` says it can't find the repo.** Either the repo is private and you're not authenticated (run the command again and look for a GitHub auth dialog), or the repo URL is wrong (should be `yuval/unitism-skills`, no `https://` prefix needed).
+**`/plugin marketplace add` says it can't find the repo.** Either the repo is private and you're not authenticated (run the command again and look for a GitHub auth dialog), or the repo URL is wrong (should be `YuvalKlein/unitism-skills`, no `https://` prefix needed).
 
 **`/` doesn't show the new skills after install.** Restart the Claude desktop app — close it completely from the system tray, then reopen. Plugin lists are cached on app start.
 
