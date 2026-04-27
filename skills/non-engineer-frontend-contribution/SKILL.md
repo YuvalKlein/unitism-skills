@@ -122,7 +122,23 @@ git fetch origin
 git rebase origin/development
 ```
 
-If there are merge conflicts: STOP. Do not attempt to resolve them — a wrong auto-resolve is worse than a stuck PR. Emit the cross-repo handoff message addressed to Yuval or Yudi, with the failing file paths and the recent `development` commits that caused the conflict. Wait for the engineer to resolve before resuming.
+If the rebase succeeds cleanly, continue to 5b.
+
+If there are merge conflicts, inspect the conflicted files:
+
+**Safe to auto-resolve** — accept `origin/development`'s version (`git checkout --theirs <file> && git add <file>`) and continue the rebase:
+
+- Lock files: `package-lock.json`, `yarn.lock`, `pubspec.lock`, `Cargo.lock`, `poetry.lock`, `Gemfile.lock`
+- Generated files: anything under `/generated/` or `/.generated/` directories, or files whose first 3 lines contain `generated` / `AUTO-GENERATED` / `DO NOT EDIT` (case-insensitive)
+
+When auto-resolving, tell the user transparently: *"I auto-resolved a conflict on `<file>` by accepting the latest version from `development`. Your other changes are intact — continuing."*
+
+**Everything else** (code, copy, config, anything that's not a lock or generated file) — STOP. Do not attempt to resolve; a wrong auto-resolve is worse than a stuck PR. Produce two outputs:
+
+1. The formal cross-repo handoff message (see `templates/cross-repo-handoff-message.md`) addressed to Yuval or Yudi, listing the conflicted files and the recent `development` commits that caused the conflict.
+2. A **short chat-ping version** the user can DM Yuval or Yudi as a lighter alternative for simple cases — e.g., *"My branch conflicts with your recent change to `src/components/BookingForm.tsx` — can you sort it?"* Tell the user: *"For simple conflicts, chat is faster than the formal handoff — use whichever feels right."*
+
+Wait for the engineer to resolve before resuming.
 
 #### 5b. Scope-creep check
 
@@ -137,14 +153,27 @@ Response if triggered: *"This branch started as `{slug}` but the changes now spa
 
 #### 5c. Out-of-scope check (most important)
 
-Scan the diff for signals that this change requires a different repo to also change for it to actually work. Specifically look for:
+Scan the diff for signals that this change requires a different repo / backend work to actually function.
 
-- New API calls to endpoints that don't currently exist in the API client / types
+**Data and APIs:**
+- New API calls to endpoints that don't exist in the API client / types
 - Request bodies with fields the backend TypeScript / Dart types don't include
 - References to response fields the types don't include
 - Env vars used but not declared in `.env.example` or config schemas
 - New external services / SDKs added as dependencies
 - New data shapes that assume backend support that isn't there
+- New persisted fields that would require a database migration
+- Copy or UI that references data the backend doesn't currently return (e.g., *"You have 3 lessons this week"* when no endpoint returns that count)
+
+**Anything that happens after the user clicks:**
+- **Email, SMS, or push notification triggers** — any change that implies "send X when Y happens"
+- **Stripe / payment flows** — new tiers, refund logic, webhook changes, fee adjustments
+- **Authentication or role-based permission logic** — *"only admins should see this,"* *"only the coach can cancel their own bookings"*
+- **Performance issues reported as UX problems** — *"this page is slow"* is almost always a backend query issue, not frontend
+
+**General rule that covers the above and anything not listed:**
+
+> If the change involves anything that happens **after the user clicks** — an email sent, a payment processed, data persisted, a notification delivered, a permission enforced — treat it as out of scope. Frontend only owns what the user sees and types.
 
 If **any** signal fires: STOP. Do not open the PR. Fill in `templates/cross-repo-handoff-message.md` with the specifics and show it to the user. Tell them:
 
@@ -217,7 +246,7 @@ Then notify: *"Reverted. `development` is back to how it was before your PR. Any
 - ❌ Start work directly on `master` or `development` (always branch off)
 - ❌ Push directly to `development` or `master` (only PRs reach those branches)
 - ❌ Open a PR without running rebase + scope + out-of-scope + secret checks
-- ❌ Auto-resolve merge conflicts for a non-engineer
+- ❌ Auto-resolve merge conflicts on code, copy, or config (lock files and generated files are the only exceptions — see 5a)
 - ❌ Merge to `development` yourself — always PR, always human review
 - ❌ Touch a second repo in the same flow — out-of-scope check must catch it
 - ❌ Skip secret scan because "it's probably fine"

@@ -35,8 +35,6 @@ If your change needs engineering work (like a new API endpoint from the backend)
 
 Without this step, Claude won't know any of the keywords (`push`, `done`, `revert`) and will behave like a generic chatbot. It takes 30 seconds.
 
-> Before running the commands below, make sure Yuval has told you the `unitism-skills` repo is ready on GitHub. If he hasn't, wait — it won't exist yet.
-
 **On Windows** — open PowerShell (search "PowerShell" in the Start menu) and paste this:
 
 ```powershell
@@ -69,11 +67,35 @@ cp -rf "$SRC/non-engineer-frontend-contribution" "$DST/"
 echo "Skill installed. Restart Claude desktop."
 ```
 
-Then **quit and reopen Claude desktop** (fully close it, don't just minimize).
+### Fully quit and reopen Claude desktop
 
-**To check the skill is loaded:** open Claude, start a new chat, select one of the `Dev\` repo folders, type *"hello, are you loading any UNITISM skills?"*. Claude should mention `non-engineer-frontend-contribution`. If it doesn't, send the error (or lack of response) to Yuval.
+You need to **fully quit** Claude — not just close the window. Closing the window just hides it; the app keeps running in the background and your install won't be picked up.
 
-**When Yuval tells you there's an update to the skill,** re-run the exact same command block above. It pulls the latest and overwrites.
+**On Windows:**
+1. Close the Claude window (the X button) — this minimizes Claude to the system tray in the bottom-right corner of the screen, next to the clock.
+2. Find the Claude icon in the system tray. If you don't see it, click the small `^` arrow in the tray to show hidden icons.
+3. Right-click the Claude icon and choose **Quit** (or **Exit**).
+4. Wait a couple of seconds, then open Claude desktop again.
+
+**On Mac:**
+1. With Claude focused, press **Cmd+Q** — or click **Claude** in the menu bar at the top of the screen and choose **Quit Claude**.
+2. Wait a couple of seconds, then open Claude desktop again.
+
+### Smoke test — check the skill actually loaded
+
+Before you try a real change, do this 30-second check:
+
+1. In Claude, start a **new chat**.
+2. Select one of the `Dev\` repo folders — e.g., `C:\Dev\tennis-miami-web`.
+3. Type: *"hello, are you loading any UNITISM skills?"*
+4. Claude should mention **`non-engineer-frontend-contribution`** by name in its reply.
+
+- **If it does** → you're ready, try a real change.
+- **If it doesn't** → the install didn't take. Take a screenshot of the reply, send it to Yuval or Yudi, and don't use the flow yet.
+
+### When there's an update
+
+When Yuval tells you there's an update to the skill, re-run the exact same install command block above. It pulls the latest and overwrites the old copy. Then fully quit and reopen Claude again.
 
 ### Every time you want to make a change:
 

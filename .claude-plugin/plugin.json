@@ -1,0 +1,8 @@
+{
+  "name": "unitism",
+  "version": "1.0.0",
+  "description": "Shared Claude skills for the UNITISM team. Install once per teammate; each skill auto-triggers based on what the person is doing.",
+  "author": {
+    "name": "Yuval Asher"
+  }
+}
