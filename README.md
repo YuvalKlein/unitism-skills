@@ -2,68 +2,49 @@
 
 Shared Claude skills for the UNITISM team and the businesses on it (ARENNA, Tennis Miami, future).
 
-This repo is structured as a **Claude plugin marketplace**. Everyone on the team installs it once and Claude auto-loads the relevant skill whenever the task matches. One person's breakthrough becomes everyone's baseline.
+This repo is structured as a **Claude plugin marketplace**. The team admin syncs it once into the Claude organization; everyone on the team installs it once from inside the desktop app. Claude then auto-loads the relevant skill whenever the task matches. One person's breakthrough becomes everyone's baseline.
 
-## Install (Asad and Kath — Windows, no terminal)
+## Install — admin step (Yuval, one-time)
 
-You install this from inside the **Claude desktop app**, not the terminal. Steps:
+1. Open **claude.ai** in a browser and log in as the org owner.
+2. Go to **Organization settings** → **Libraries** → **Plugins**.
+3. Click **Add plugins** (top-right) → **Sync from GitHub**.
+4. Enter `YuvalKlein/unitism-skills`. Authenticate with GitHub if prompted.
+5. Set **User access** to whatever's right (open to all org members, restricted to specific people, etc.).
+
+Claude will auto-detect the marketplace structure (`.claude-plugin/marketplace.json` at the repo root) and surface the `unitism` plugin to your org. Whenever the repo updates, the synced version follows automatically — no manual re-sync, no zip uploads.
+
+**Prerequisite:** Asad and Kath must be members of your Claude organization (Identity and access tab in the same admin sidebar). If they're on individual Claude accounts, the plugin won't reach them — invite them to the org first.
+
+## Install — member step (Asad, Kath, Yudi)
+
+Once the admin step is done, every team member installs the plugin once from inside the **Claude desktop app**:
 
 1. Open the Claude desktop app.
-2. Click the **Code** icon at the top-left (the one between Chat and Cowork). This is Claude Code embedded in the desktop app — same thing as the terminal version, just with a chat UI.
-3. In the chat box at the bottom, type this and press enter:
+2. Click **Customize** in the left sidebar (briefcase icon).
+3. Click **Browse plugins**.
+4. Click the **Your organization** tab at the top.
+5. Find **unitism** in the list, click the **`+`** button to install.
 
-   ```
-   /plugin marketplace add YuvalKlein/unitism-skills
-   ```
+That's it. No terminal, no symlinks, no PowerShell, no GitHub auth dialog (the admin already handled the GitHub side).
 
-   Claude will fetch the marketplace and confirm. If it asks to trust the source, say yes.
+### Verify it worked
 
-4. Then type:
+Type a single `/` in any chat (Chat, Cowork, or Code tab — anywhere). You should see autocomplete options including:
 
-   ```
-   /plugin install unitism@unitism-skills
-   ```
+- `non-engineer-frontend-contribution`
+- `cross-repo-handoff-message`
+- `product-positioning-check`
 
-   This installs the `unitism` plugin (which contains all three skills: the contribution flow, the handoff receiver, and the positioning check).
+If those three names appear, the install succeeded. If only default options like `/help` show up, restart the desktop app (close from system tray, reopen) — plugin lists are cached at app start.
 
-5. **Verify it worked.** Type a single `/` in the chat box. You should see autocomplete options including `non-engineer-frontend-contribution`, `cross-repo-handoff-message`, and `product-positioning-check`. If those three names appear, install succeeded. If `/` only shows the default options (like `/help`, `/clear`), the install didn't take — see Troubleshooting below.
+## Verifying the skills actually trigger
 
-You don't need to symlink anything, run any PowerShell commands, or touch a terminal. Steps 3–5 all happen inside the chat box.
+Installation is one thing; the skill triggering at the right moment is another. Quick smoke tests:
 
-### If the repo is private
-
-If `YuvalKlein/unitism-skills` is a private GitHub repo, the desktop app may prompt you to authenticate with GitHub the first time you run step 3. Click through the GitHub auth dialog with your team account. If you don't have access to the repo, ask Yuval to add you as a collaborator on github.com/YuvalKlein/unitism-skills.
-
-## Install (Yuval and Yudi — engineers)
-
-Same as above. The same `/plugin install unitism@unitism-skills` gives you all three skills, including the engineer-side `cross-repo-handoff-message` skill (which only fires when you paste a handoff message from Asad or Kath, so it doesn't add noise the rest of the time).
-
-If you prefer the CLI workflow:
-
-```bash
-claude
-# inside Claude Code:
-/plugin marketplace add YuvalKlein/unitism-skills
-/plugin install unitism@unitism-skills
-```
-
-## Update
-
-When new skills land in the repo, update with:
-
-```
-/plugin marketplace update unitism-skills
-```
-
-(Run this from the Code tab in the desktop app, or from Claude Code in the terminal — same command.)
-
-## Verifying it's actually triggering
-
-Installation is one thing; the skill triggering at the right time is another. Quick smoke test for each skill:
-
-- **`non-engineer-frontend-contribution`** — open a Tennis Miami repo (`tennis-miami`, `tennis-miami-web`, or `arenna-link`) in Claude Code, then say *"I want to change the signup button color to navy."* If the skill is active, Claude announces the branch name (`<yourname>/feat/signup-button-color`) before doing anything else. If Claude just edits files without announcing a branch, the skill didn't trigger.
+- **`non-engineer-frontend-contribution`** — open a Tennis Miami repo (`tennis-miami`, `tennis-miami-web`, or `arenna-link`) in Claude, then say *"I want to change the signup button color to navy."* If the skill is active, Claude announces the branch name (`<yourname>/feat/signup-button-color`) before doing anything else. If Claude just edits files without announcing a branch, the skill didn't trigger.
 - **`product-positioning-check`** — in the same kind of repo, say *"add a Wallet tab to the bottom navigation."* If the skill is active, Claude pushes back with a positioning verdict referencing the locked principles doc, *before* writing code. If Claude just adds the tab silently, the skill didn't trigger.
-- **`cross-repo-handoff-message`** — only fires when you paste a handoff message starting with `## Cross-repo change requested`. Not worth testing standalone; you'll see it the first time someone paastes one in.
+- **`cross-repo-handoff-message`** — only fires when you paste a handoff message starting with `## Cross-repo change requested`. Not worth testing standalone; you'll see it the first time someone pastes one in.
 
 ## What's in the bundle today
 
@@ -82,21 +63,27 @@ Planned but not yet written (we write skills after feeling their absence, not be
 
 See `_shared/strategy/ai-strategy-handoff.md` in `claude_files` for the full strategy and sequencing.
 
+## Updates
+
+When new skills land in this repo and get pushed to GitHub, the org-synced plugin updates automatically — no admin action needed. Members may need to restart the desktop app to pick up new skills, since the skill list is cached at startup.
+
+If a critical update needs to land before someone's next restart, ask them to: **Customize → Skills → click the unitism plugin → Refresh**. (Skill names should re-appear in `/` autocomplete immediately after.)
+
 ## Troubleshooting
 
-**`/plugin marketplace add` says it can't find the repo.** Either the repo is private and you're not authenticated (run the command again and look for a GitHub auth dialog), or the repo URL is wrong (should be `YuvalKlein/unitism-skills`, no `https://` prefix needed).
+**The "Your organization" tab shows nothing.** Either you're not a member of the Claude organization that owns the synced plugin, or the admin hasn't synced it yet. Confirm with Yuval that you've been invited to the org and that the sync is complete on the admin side.
 
 **`/` doesn't show the new skills after install.** Restart the Claude desktop app — close it completely from the system tray, then reopen. Plugin lists are cached on app start.
 
-**The skill installed but doesn't trigger.** Run the smoke test for that skill above. If it doesn't fire, the trigger phrasing in your message may not match what the skill's `description` is looking for — try one of the example phrases from the skill's smoke test. If it still doesn't trigger, ping Yuval; the skill's `description` field may need tightening.
+**The skill installed but doesn't trigger.** Run the smoke test for that skill above. If it doesn't fire, the trigger phrasing in your message may not match what the skill's `description` is looking for — try one of the example phrases from the smoke test. If it still doesn't trigger, ping Yuval; the skill's `description` field may need tightening.
 
-**You're on the desktop app, the Code icon isn't there.** Update the desktop app to the latest version. The Code-mode integration shipped in late 2025; older versions may not have it.
+**You're on the desktop app, the Customize tab isn't there.** Update the desktop app to the latest version. Plugin/customize support shipped in early 2026; older versions may not have it.
 
 ## Adding or editing a skill
 
 For now: open a PR; Yuval reviews. Once we have 5+ active contributors to skills, delegate domain-expert review (Yudi on backend skills, Yuval on strategy skills).
 
-When adding a new skill, place it under `skills/<skill-name>/` with a `SKILL.md` that follows the existing format (name + description in frontmatter, body sections like Purpose / Flow / Anti-patterns / Reference). Don't edit the marketplace.json or plugin.json unless you're adding a *new plugin* (not a new skill within the existing `unitism` plugin) — those files are stable.
+When adding a new skill, place it under `skills/<skill-name>/` with a `SKILL.md` that follows the existing format (name + description in frontmatter, body sections like Purpose / Flow / Anti-patterns / Reference). Don't edit `marketplace.json` or `plugin.json` unless you're adding a *new plugin* (not a new skill within the existing `unitism` plugin) — those files are stable. After merge to `main`, the org-synced plugin picks up the change automatically.
 
 ## Reference
 
