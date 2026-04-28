@@ -2,41 +2,31 @@
 
 Shared Claude skills for the UNITISM team and the businesses on it (ARENNA, Tennis Miami, future).
 
-This repo is structured as a **Claude plugin marketplace**. The team admin syncs it once into the Claude organization; everyone on the team installs it once from inside the desktop app. Claude then auto-loads the relevant skill whenever the task matches. One person's breakthrough becomes everyone's baseline.
+This repo is structured as a **Claude plugin marketplace**. The team admin syncs it once into the Claude organization with "Installed by default" access; everyone in the org gets the plugin automatically on their next app launch. Claude then auto-loads the relevant skill whenever the task matches. One person's breakthrough becomes everyone's baseline.
 
 ## Install — admin step (Yuval, one-time)
 
 1. Open **claude.ai** in a browser and log in as the org owner.
 2. Go to **Organization settings** → **Libraries** → **Plugins**.
-3. Click **Add plugins** (top-right) → **Sync from GitHub**.
-4. Enter `YuvalKlein/unitism-skills`. Authenticate with GitHub if prompted.
-5. Set **User access** to whatever's right (open to all org members, restricted to specific people, etc.).
+3. Click **Add plugins** → **Sync from GitHub**.
+4. In the dialog: pick `YuvalKlein/unitism-skills` from the dropdown. Leave **Marketplace name** as default (or set to something cleaner like `Unitism`). Keep **Sync automatically** ON. Set **Default access** to **Installed by default** — this is what gives every org member the plugin without them needing to click anything.
+5. Click **Create**.
 
-Claude will auto-detect the marketplace structure (`.claude-plugin/marketplace.json` at the repo root) and surface the `unitism` plugin to your org. Whenever the repo updates, the synced version follows automatically — no manual re-sync, no zip uploads.
+Claude will sync the marketplace from the repo. Within a few seconds the entry should show **Synced** with the **Unitism** plugin listed under it. From this moment on, every push to `main` propagates to every org member's desktop app on next restart.
 
 **Prerequisite:** Asad and Kath must be members of your Claude organization (Identity and access tab in the same admin sidebar). If they're on individual Claude accounts, the plugin won't reach them — invite them to the org first.
 
 ## Install — member step (Asad, Kath, Yudi)
 
-Once the admin step is done, every team member installs the plugin once from inside the **Claude desktop app**:
+There is no install step. With **Installed by default** set on the admin side, the plugin appears automatically.
 
-1. Open the Claude desktop app.
-2. Click **Customize** in the left sidebar (briefcase icon).
-3. Click **Browse plugins**.
-4. Click the **Your organization** tab at the top.
-5. Find **unitism** in the list, click the **`+`** button to install.
+1. **Restart the Claude desktop app** (close it completely from the system tray, then reopen). Plugin lists are cached at startup, so a fresh launch is needed to see new plugins.
+2. Type a single `/` in any chat. You should see autocomplete options including:
+   - `non-engineer-frontend-contribution`
+   - `cross-repo-handoff-message`
+   - `product-positioning-check`
 
-That's it. No terminal, no symlinks, no PowerShell, no GitHub auth dialog (the admin already handled the GitHub side).
-
-### Verify it worked
-
-Type a single `/` in any chat (Chat, Cowork, or Code tab — anywhere). You should see autocomplete options including:
-
-- `non-engineer-frontend-contribution`
-- `cross-repo-handoff-message`
-- `product-positioning-check`
-
-If those three names appear, the install succeeded. If only default options like `/help` show up, restart the desktop app (close from system tray, reopen) — plugin lists are cached at app start.
+If those three names appear, the plugin is active and the skills are ready to fire on the right triggers.
 
 ## Verifying the skills actually trigger
 
@@ -67,23 +57,43 @@ See `_shared/strategy/ai-strategy-handoff.md` in `claude_files` for the full str
 
 When new skills land in this repo and get pushed to GitHub, the org-synced plugin updates automatically — no admin action needed. Members may need to restart the desktop app to pick up new skills, since the skill list is cached at startup.
 
-If a critical update needs to land before someone's next restart, ask them to: **Customize → Skills → click the unitism plugin → Refresh**. (Skill names should re-appear in `/` autocomplete immediately after.)
-
 ## Troubleshooting
 
-**The "Your organization" tab shows nothing.** Either you're not a member of the Claude organization that owns the synced plugin, or the admin hasn't synced it yet. Confirm with Yuval that you've been invited to the org and that the sync is complete on the admin side.
-
-**`/` doesn't show the new skills after install.** Restart the Claude desktop app — close it completely from the system tray, then reopen. Plugin lists are cached on app start.
+**`/` doesn't show the new skills.** Restart the Claude desktop app — close it completely from the system tray, then reopen. Plugin lists are cached on app start.
 
 **The skill installed but doesn't trigger.** Run the smoke test for that skill above. If it doesn't fire, the trigger phrasing in your message may not match what the skill's `description` is looking for — try one of the example phrases from the smoke test. If it still doesn't trigger, ping Yuval; the skill's `description` field may need tightening.
 
-**You're on the desktop app, the Customize tab isn't there.** Update the desktop app to the latest version. Plugin/customize support shipped in early 2026; older versions may not have it.
+**You're a new team member and don't see the plugin.** Confirm with Yuval that you've been invited to his Claude organization (claude.ai → Organization → Identity and access). Without org membership, "Installed by default" doesn't reach you.
+
+**You're on the desktop app, the Customize sidebar item isn't there.** Update the desktop app to the latest version. Plugin/customize support shipped in early 2026; older versions may not have it.
 
 ## Adding or editing a skill
 
 For now: open a PR; Yuval reviews. Once we have 5+ active contributors to skills, delegate domain-expert review (Yudi on backend skills, Yuval on strategy skills).
 
 When adding a new skill, place it under `skills/<skill-name>/` with a `SKILL.md` that follows the existing format (name + description in frontmatter, body sections like Purpose / Flow / Anti-patterns / Reference). Don't edit `marketplace.json` or `plugin.json` unless you're adding a *new plugin* (not a new skill within the existing `unitism` plugin) — those files are stable. After merge to `main`, the org-synced plugin picks up the change automatically.
+
+## Repo structure
+
+```
+unitism-skills/
+├── .claude-plugin/
+│   ├── marketplace.json    # registers this repo as a marketplace, points to the unitism plugin
+│   └── plugin.json         # describes the unitism plugin (name, version, description)
+├── skills/
+│   ├── non-engineer-frontend-contribution/
+│   │   ├── SKILL.md
+│   │   ├── reference/
+│   │   └── templates/
+│   ├── cross-repo-handoff-message/
+│   │   └── SKILL.md
+│   └── product-positioning-check/
+│       └── SKILL.md
+├── README.md
+└── .gitignore
+```
+
+The plugin (`.claude-plugin/plugin.json`) and the marketplace (`.claude-plugin/marketplace.json`) coexist at the repo root by design. The marketplace.json uses `source: { source: "github", repo: "YuvalKlein/unitism-skills" }` — the same-repo reference works because the validator clones the repo and finds the plugin metadata at the root.
 
 ## Reference
 
