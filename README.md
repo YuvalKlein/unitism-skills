@@ -25,8 +25,9 @@ There is no install step. With **Installed by default** set on the admin side, t
    - `non-engineer-frontend-contribution`
    - `cross-repo-handoff-message`
    - `product-positioning-check`
+   - `unitism-backend-feature`
 
-If those three names appear, the plugin is active and the skills are ready to fire on the right triggers.
+If those four names appear, the plugin is active and the skills are ready to fire on the right triggers.
 
 ## Verifying the skills actually trigger
 
@@ -34,6 +35,7 @@ Installation is one thing; the skill triggering at the right moment is another. 
 
 - **`non-engineer-frontend-contribution`** — open a Tennis Miami repo (`tennis-miami`, `tennis-miami-web`, or `arenna-link`) in Claude, then say *"I want to change the signup button color to navy."* If the skill is active, Claude announces the branch name (`<yourname>/feat/signup-button-color`) before doing anything else. If Claude just edits files without announcing a branch, the skill didn't trigger.
 - **`product-positioning-check`** — in the same kind of repo, say *"add a Wallet tab to the bottom navigation."* If the skill is active, Claude pushes back with a positioning verdict referencing the locked principles doc, *before* writing code. If Claude just adds the tab silently, the skill didn't trigger.
+- **`unitism-backend-feature`** — open `unitism-backend` in Claude, then say *"add an endpoint to update a contributor's payout preferences."* If the skill is active, Claude reads `COMPONENTS.md` / `API_GUIDE.md` / `PROTECTED.md` before writing code, lists which clients consume the endpoint, and explicitly mentions cross-client smoke testing. If Claude just writes a controller, the skill didn't trigger.
 - **`cross-repo-handoff-message`** — only fires when you paste a handoff message starting with `## Cross-repo change requested`. Not worth testing standalone; you'll see it the first time someone pastes one in.
 
 ## What's in the bundle today
@@ -41,13 +43,14 @@ Installation is one thing; the skill triggering at the right moment is another. 
 - **`skills/non-engineer-frontend-contribution/`** — safe contribution flow for team members without engineering background. Branch-off-development naming, keyword-driven commit/push/PR (`push`, `done`, `revert`), scope + out-of-scope + secret checks, paste-ready cross-repo handoff message format, onboarding primer with flow diagram.
 - **`skills/cross-repo-handoff-message/`** — receiver side for Yuval and Yudi. Triggers when a handoff message is pasted in; parses it, creates the branch in the target repo, implements the change, opens the PR, notifies the original requester. **Status: draft, pre-dogfood.** Expect to iterate after week-2 real usage.
 - **`skills/product-positioning-check/`** — second pair of eyes on changes that touch a primary surface (bottom nav, onboarding, hero copy, app store listing, first push notification). Reads `_shared/strategy/product-positioning-principles.md`, identifies which product's positioning applies (Tennis Miami → community-first; ARENNA → instructor-first), runs the decision test, and emits PASS / FLAG / FAIL with a concrete non-primary alternative. Does not block — informs. Triggered by the April 2026 wallet-and-offers-in-nav incident.
+- **`skills/unitism-backend-feature/`** — the engineering-side skill for `unitism-backend`. Enforces COMPONENTS.md / API_GUIDE.md / PROTECTED.md as the canon, the `/api/v1/*` versioning contract, attribute inheritance via DB triggers, TDD discipline, and — the centerpiece — cross-client verification before declaring done (web AND mobile, not just one). Born from the recurring "I tested on web, you tested on Android, only one of us was right" failure mode.
 
 ## What's coming
 
 Planned but not yet written (we write skills after feeling their absence, not before):
 
-- `unitism-backend-feature` — modular monolith patterns, `/api/v1/projects/*` contract, attribute inheritance, COMPONENTS.md registration.
 - `arenna-cross-repo-feature` — ARENNA's three-repo workflow (backend + sessionizer + agent-server).
+- `holon-work-log` — meta-skill that creates a holon record after meaningful work, so we eat our own dogfood and have an audit trail before unit distribution goes live.
 - `strategy-doc` — voice/tone/terminology consistency across pitch, PRDs, investor docs.
 - `new-business-on-platform` — launch pattern for business #2 and beyond.
 
@@ -87,7 +90,9 @@ unitism-skills/
 │   │   └── templates/
 │   ├── cross-repo-handoff-message/
 │   │   └── SKILL.md
-│   └── product-positioning-check/
+│   ├── product-positioning-check/
+│   │   └── SKILL.md
+│   └── unitism-backend-feature/
 │       └── SKILL.md
 ├── README.md
 └── .gitignore
